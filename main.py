@@ -37,7 +37,16 @@ def conexaoBanco():
         print(f"Erro ao conectar ao banco de dados... {e}")
 
 def query(conexao, sql, dados=None):
-    ...
+    try:
+        cursor = conexao.cursor()
+        if dados:
+            cursor.execute(sql, dados)
+        else:
+            cursor.execute(sql)
+        conexao.commit()
+        print("A conexão do Query foi completada com sucesso!")
+    except Error as e:
+        print(f"Erro ao conectar o Query... {e}")
 
 def consultar(conexao, sql, dados=None):
     ...
