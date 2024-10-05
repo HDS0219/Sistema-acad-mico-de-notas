@@ -2,6 +2,8 @@ import os
 import sqlite3
 from sqlite3 import Error
 
+from select import error
+
 caminho = os.path.dirname(__file__)
 nomeArquivo = os.path.join(caminho, "notas.db")
 
@@ -27,7 +29,12 @@ def criar_tabela(conexao):
 
 
 def conexaoBanco():
-    ...
+    conexao = None
+    try:
+        conexao = sqlite3.connect(nomeArquivo)
+        print("Conectado ao banco de dados com sucesso!")
+    except Error as e:
+        print(f"Erro ao conectar ao banco de dados... {e}")
 
 def query(conexao, sql, dados=None):
     ...
