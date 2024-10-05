@@ -2,7 +2,6 @@ import os
 import sqlite3
 from sqlite3 import Error
 
-from select import error
 
 caminho = os.path.dirname(__file__)
 nomeArquivo = os.path.join(caminho, "notas.db")
@@ -35,6 +34,7 @@ def conexaoBanco():
         print("Conectado ao banco de dados com sucesso!")
     except Error as e:
         print(f"Erro ao conectar ao banco de dados... {e}")
+    return conexao
 
 def query(conexao, sql, dados=None):
     try:
@@ -58,10 +58,16 @@ def consultar(conexao, sql, dados=None):
         return cursor.fetchall()
     except Error as e:
         print(f"Erro ao realizar a consulta... {e}")
+        return []
 
 #por enquanto foi adicionado no terminal o banco de dados.
 def menu():
-    ...
+    print("Sistema de Notas")
+    print("1. Inserir Nota")
+    print("2. Deletar Nota")
+    print("3. Atualizar Nota")
+    print("4. Consultar Nota")
+    opcao = input("Escolha uma opção: ")
 
 def menuInserir():
     ...
@@ -82,9 +88,11 @@ def inserir_nota(conexao, aluno, disciplina, nota1, nota2, nota3, nota4):
         INSERT INTO notas (aluno, disciplina, nota1, nota2, nota3, nota4, media)
         VALUES (?, ?, ?, ?, ?, ?, ?);
         '''
-        cursor = conexao.cursor()
-        cursor.execute(sql, (aluno, disciplina, nota1, nota2, nota3, nota4, media))
-        conexao.commit()
+        query(conexao, sql, (aluno, disciplina, nota1, nota2, nota3, nota4, media))
     except Error as e:
         print(f"Erro ao inserir notas: {e}")
 
+if __name__ == "__main__":
+    conexao = conexaoBanco()
+    if conexao:
+        criar_tabela(conexao)
