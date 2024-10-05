@@ -49,7 +49,15 @@ def query(conexao, sql, dados=None):
         print(f"Erro ao conectar o Query... {e}")
 
 def consultar(conexao, sql, dados=None):
-    ...
+    try:
+        cursor = conexao.cursor()
+        if dados:
+            cursor.execute(sql, dados)
+        else:
+            cursor.execute(sql)
+        return cursor.fetchall()
+    except Error as e:
+        print(f"Erro ao realizar a consulta... {e}")
 
 #por enquanto foi adicionado no terminal o banco de dados.
 def menu():
