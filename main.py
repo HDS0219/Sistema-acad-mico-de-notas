@@ -1,8 +1,7 @@
 import os
 import sqlite3
-from sqlite3 import Error
 
-
+# Caminho para o banco de dados
 caminho = os.path.dirname(__file__)
 nomeArquivo = os.path.join(caminho, "notas.db")
 
@@ -23,16 +22,15 @@ def criar_tabela(conexao):
         cursor = conexao.cursor()
         cursor.execute(sql)
         conexao.commit()
-    except Error as e:
+    except sqlite3.Error as e:
         print(f"Erro ao criar tabela: {e}")
-
 
 def conexaoBanco():
     conexao = None
     try:
         conexao = sqlite3.connect(nomeArquivo)
         print("Conectado ao banco de dados com sucesso!")
-    except Error as e:
+    except sqlite3.Error as e:
         print(f"Erro ao conectar ao banco de dados... {e}")
     return conexao
 
@@ -44,9 +42,9 @@ def query(conexao, sql, dados=None):
         else:
             cursor.execute(sql)
         conexao.commit()
-        print("A conexão do Query foi completada com sucesso!")
-    except Error as e:
-        print(f"Erro ao conectar o Query... {e}")
+        print("Query executada com sucesso!")
+    except sqlite3.Error as e:
+        print(f"Erro ao executar a query... {e}")
 
 def consultar(conexao, sql, dados=None):
     try:
@@ -56,12 +54,11 @@ def consultar(conexao, sql, dados=None):
         else:
             cursor.execute(sql)
         return cursor.fetchall()
-    except Error as e:
+    except sqlite3.Error as e:
         print(f"Erro ao realizar a consulta... {e}")
         return []
 
-#por enquanto foi adicionado no terminal o banco de dados.
-def menu():
+def menu(conexao):
     while True:
         print("\nSistema de Notas")
         print("1. Inserir Nota")
@@ -73,33 +70,30 @@ def menu():
         opcao = input("Escolha uma opção: ")
 
         if opcao == '1':
-            menuInserir()
+            menuInserir(conexao)
         elif opcao == '2':
-            menuDeletar()
+            menuDeletar(conexao)
         elif opcao == '3':
-            menuAtualizar()
+            menuAtualizar(conexao)
         elif opcao == '4':
-            consultarMatricula()
+            consultarMatricula(conexao)
         elif opcao == '5':
             print("Saindo...")
             break
         else:
             print("Opção inválida, tente novamente.")
 
+def menuInserir(conexao):
+    aluno = input("Nome do aluno: ")
+    disciplina = input("Disciplina: ")
+    nota1 = float(input("Nota 1: "))
+    nota2 = float(input("Nota 2: "))
+    nota3 = float(input("Nota 3: "))
+    nota4 = float(input("Nota 4: "))
 
-def menuInserir():
-    def menuInserir():
-        aluno = input("Nome do aluno: ")
-        disciplina = input("Disciplina: ")
-        nota1 = float(input("Nota 1: "))
-        nota2 = float(input("Nota 2: "))
-        nota3 = float(input("Nota 3: "))
-        nota4 = float(input("Nota 4: "))
+    inserir_nota(conexao, aluno, disciplina, nota1, nota2, nota3, nota4)
 
-        inserir_nota(conexao, aluno, disciplina, nota1, nota2, nota3, nota4)
-
-
-def menuDeletar():
+def menuDeletar(conexao):
     nome = input("Digite o nome do aluno para deletar: ")
     sql = "SELECT * FROM notas WHERE aluno = ?"
     resultado = consultar(conexao, sql, (nome,))
@@ -111,15 +105,14 @@ def menuDeletar():
                 sql_delete = "DELETE FROM notas WHERE aluno = ?"
                 query(conexao, sql_delete, (nome,))
                 print(f"Notas de {nome} deletadas com sucesso!")
-            except Error as e:
+            except sqlite3.Error as e:
                 print(f"Erro ao deletar as notas: {e}")
         else:
             print("Operação cancelada.")
     else:
         print("Aluno não encontrado.")
 
-
-def menuAtualizar():
+def menuAtualizar(conexao):
     nome = input("Digite o nome do aluno para atualizar: ")
     sql = "SELECT * FROM notas WHERE aluno = ?"
     resultado = consultar(conexao, sql, (nome,))
@@ -141,23 +134,21 @@ def menuAtualizar():
             '''
             query(conexao, sql_update, (nota1, nota2, nota3, nota4, media, nome))
             print(f"Notas de {nome} atualizadas com sucesso!")
-        except Error as e:
+        except sqlite3.Error as e:
             print(f"Erro ao atualizar as notas: {e}")
     else:
         print("Aluno não encontrado.")
 
+def consultarMatricula(conexao):
+    nome = input("Digite o nome do aluno para consultar: ")
+    sql = "SELECT * FROM notas WHERE aluno = ?"
+    resultados = consultar(conexao, sql, (nome,))
 
-def consultarMatricula():
-    def consultarMatricula():
-        nome = input("Digite o nome do aluno para consultar: ")
-        sql = "SELECT * FROM notas WHERE aluno = ?"
-        resultados = consultar(conexao, sql, (nome,))
-
-        if resultados:
-            for resultado in resultados:
-                print(resultado)
-        else:
-            print("Nenhuma nota encontrada para o aluno.")
+    if resultados:
+        for resultado in resultados:
+            print(resultado)
+    else:
+        print("Nenhuma nota encontrada para o aluno.")
 
 def inserir_nota(conexao, aluno, disciplina, nota1, nota2, nota3, nota4):
     media = (nota1 + nota2 + nota3 + nota4) / 4
@@ -167,10 +158,11 @@ def inserir_nota(conexao, aluno, disciplina, nota1, nota2, nota3, nota4):
         VALUES (?, ?, ?, ?, ?, ?, ?);
         '''
         query(conexao, sql, (aluno, disciplina, nota1, nota2, nota3, nota4, media))
-    except Error as e:
+    except sqlite3.Error as e:
         print(f"Erro ao inserir notas: {e}")
 
 if __name__ == "__main__":
     conexao = conexaoBanco()
     if conexao:
         criar_tabela(conexao)
+        menu(conexao)
