@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-from backend.main import conexaoBanco, criar_tabela, inserir_nota, consultar, atualizar_nota, deletar_nota
+from backend import *
 
 class SistemaAcademico:
     def __init__(self, root):
