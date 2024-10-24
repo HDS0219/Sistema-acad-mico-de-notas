@@ -20,6 +20,6 @@ Este projeto é um Sistema Acadêmico de Notas desenvolvido para a disciplina de
 ## Status do projeto
 ### Checklist
 - [x] Banco de dados (SQLite3)
-- [ ] Interface gráfica (Tkinter)
-- [ ] Cadastro de alunos
-- [ ] Consulta de alunos
+- [x] Interface gráfica (Tkinter)
+- [x] Cadastro de alunos na interface gráfica
+- [x] Consulta de alunos na interface gráfica
